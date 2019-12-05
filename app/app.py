@@ -11,8 +11,8 @@ LUNCH_HOURS = { 'start': time(hour=11, minute=30),
 
 def get_client_ip_location(request):
     if app.debug:
-        client_ip = '144.2.103.184'
-        client_ip =  '72.229.28.185'
+        # client_ip = '144.2.103.184' # Neuchâtel
+        client_ip =  '72.229.28.185' # New York
     else:
         client_ip = request.remote_addr
     req = urllib.request.Request(URL_FOR_API + client_ip) 
