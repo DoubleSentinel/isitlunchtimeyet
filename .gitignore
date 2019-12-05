@@ -105,3 +105,6 @@ venv.bak/
 
 # vim IDE
 *.sw[op]
+
+# example docker-compoe
+docker-compose.yml
