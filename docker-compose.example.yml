@@ -10,3 +10,4 @@ services:
      - FLASK_APP=app.py
      - FLASK_ENV=development
     command: ["--host=0.0.0.0"]
+    restart: always
