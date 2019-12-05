@@ -1,0 +1,27 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Is it lunchtime yet?</title>
+  <meta name="description" content="A website that tells you if it's lunchtime yet">
+  <meta name="author" content="Courgettes Club">
+
+  <!-- CSS -->
+  <link rel="stylesheet"
+  	href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
+	integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47"
+	crossorigin="anonymous">
+  <link rel="stylesheet"
+  	href="static/css/styles.css">
+</head>
+
+<body>
+	<h1 class="centered">
+	{{ 'YES' if its_lunchtime else 'NO' }}
+	</h1>
+	<!-- <script src="js/scripts.js"></script> -->
+</body>
+
+</html>
