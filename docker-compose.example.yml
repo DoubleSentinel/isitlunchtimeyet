@@ -5,7 +5,8 @@ services:
     build: .
     image: isitlunchtimeyet
     ports:
-     - "5000"
+     - "5000:5000"
     environment:
      - FLASK_APP=app.py
      - FLASK_ENV=development
+    command: ["--host=0.0.0.0"]
