@@ -28,4 +28,4 @@ def web():
 
 @app.route('/api')
 def api():
-    return
+    return 'to implement'
