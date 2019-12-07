@@ -29,5 +29,3 @@ def web():
 @app.route('/api')
 def api():
     return
-
-print("lskdjflkjd")
