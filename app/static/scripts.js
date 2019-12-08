@@ -7,6 +7,7 @@ const updateLunchtime = async () => {
         document.getElementBy('main').innerHMTML = 'Maybe. :(';
     } else {
         document.getElementById('main').innerHTML = json.lunchtime.toUpperCase();
+        document.getElementById('second').innerHTML = json.flavorMessage;
     }
 }
 
