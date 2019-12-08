@@ -1,6 +1,7 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from datetime import datetime, time
-import urllib, json, pytz
+from requests import get as http_get
+import pytz
 
 app = Flask(__name__)
 
@@ -15,17 +16,37 @@ def get_client_ip_location(request):
         client_ip =  '72.229.28.185' # New York
     else:
         client_ip = request.remote_addr
-    req = urllib.request.Request(URL_FOR_API + client_ip)
-    return json.loads(urllib.request.urlopen(req).read())
+    response = http_get(URL_FOR_API + client_ip)
+    return response.json()
+
+def is_lunchtime(request):
+    try:
+        client_info = get_client_ip_location(request)
+        client_timezone = client_info['timezone']
+        client_time_now = datetime.now(pytz.timezone(client_timezone)).time()
+        return LUNCH_HOURS['start'] <= client_time_now < LUNCH_HOURS['end']
+    except KeyError as e:
+        raise BaseException("Could not find timezone from IP", client_info['message'])
 
 @app.route('/', methods=['GET'])
 def web():
-    client_timezone = get_client_ip_location(request)['timezone']
-    client_time_now = datetime.now(pytz.timezone(client_timezone)).time()
-    its_lunchtime = LUNCH_HOURS['start'] <= client_time_now < LUNCH_HOURS['end']
-    return render_template('template.html',
-                            its_lunchtime=its_lunchtime)
+    its_lunchtime = is_lunchtime(request)
+    return render_template('template.html', its_lunchtime=its_lunchtime)
 
 @app.route('/api')
 def api():
     return 'to implement'
+
+@app.route('/api/lunch')
+def api_lunch():
+    try:
+        return jsonify(
+            status='ok',
+            lunchtime='yes' if is_lunchtime(request) else 'no',
+            flavorMessage='not implemented'
+        )
+    except BaseException as e:
+        return jsonify(
+            status='error',
+            errorMessage=str(e),
+        )
