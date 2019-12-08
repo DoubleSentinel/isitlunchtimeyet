@@ -13,6 +13,10 @@ LUNCH_HOURS = {
 }
 
 
+class IpApiError(BaseException):
+    pass
+
+
 def get_client_ip_location(request):
     if app.debug:
         # client_ip = '144.2.103.184' # Neuchâtel
@@ -23,14 +27,28 @@ def get_client_ip_location(request):
     return response.json()
 
 
-def is_lunchtime(request):
+def is_requested_lunchtime(time):
+    pass
+
+
+def is_client_lunchtime(request):
     try:
         client_info = get_client_ip_location(request)
         client_timezone = client_info['timezone']
         client_time_now = datetime.now(pytz.timezone(client_timezone)).time()
         return LUNCH_HOURS['start'] <= client_time_now < LUNCH_HOURS['end']
     except KeyError:
-        raise BaseException("Could not find timezone from IP", client_info['message'])
+        raise IpApiError("Could not find timezone from IP", client_info['message'])
+
+
+def is_lunchtime(request):
+    try:
+        return is_requested_lunchtime(request.args['time'])
+    except KeyError:
+        try:
+            return is_client_lunchtime(request)
+        except IpApiError as e:
+            raise e
 
 
 @app.route('/', methods=['GET'])
