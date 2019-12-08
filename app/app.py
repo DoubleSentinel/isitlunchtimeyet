@@ -42,6 +42,7 @@ def web():
 def api():
     return 'to implement'
 
+
 @app.route('/api/lunch')
 def api_lunch():
     try:
