@@ -31,7 +31,7 @@ def is_lunchtime(request):
 @app.route('/', methods=['GET'])
 def web():
     its_lunchtime = is_lunchtime(request)
-    return render_template('template.html', its_lunchtime=its_lunchtime)
+    return render_template('index.html')
 
 @app.route('/api')
 def api():
