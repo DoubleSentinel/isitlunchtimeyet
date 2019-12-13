@@ -1,16 +1,14 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, redirect, url_for
 from datetime import datetime, time
 from requests import get as http_get
 import pytz
+
+from verbs import VERBS
 
 app = Flask(__name__)
 
 URL_FOR_API = 'http://ip-api.com/json/'
 
-LUNCH_HOURS = {
-    'start': time(hour=11, minute=30),
-    'end': time(hour=13)
-}
 
 
 class IpApiError(BaseException):
@@ -27,50 +25,71 @@ def get_client_ip_location(request):
     return response.json()
 
 
-def is_requested_lunchtime(time):
-    pass
+def check_time_for_verb(verb, time):
+    for time_frame in VERBS[verb]:
+        frame_start = datetime.strptime(time_frame['start'], "%H:%M:%S")
+        frame_end = datetime.strptime(time_frame['end'], "%H:%M:%S")
+
+        if frame_start.time() <= time < frame_end.time():
+            return time_frame['is_it_time'], time_frame['flavor']
+
+    return "NO", "It's most definitely, probably not the time" 
 
 
-def is_client_lunchtime(request):
+def is_requested_time(verb, hour, minute):
+    return check_time_for_verb(verb, time(hour=hour, minute=minute))
+    
+
+
+def is_client_time(request, verb):
     try:
         client_info = get_client_ip_location(request)
         client_timezone = client_info['timezone']
         client_time_now = datetime.now(pytz.timezone(client_timezone)).time()
-        return LUNCH_HOURS['start'] <= client_time_now < LUNCH_HOURS['end']
     except KeyError:
         raise IpApiError("Could not find timezone from IP", client_info['message'])
 
+    return check_time_for_verb(verb, client_time_now)
 
-def is_lunchtime(request):
-    try:
-        return is_requested_lunchtime(request.args['time'])
-    except KeyError:
-        try:
-            return is_client_lunchtime(request)
-        except IpApiError as e:
-            raise e
 
 
 @app.route('/', methods=['GET'])
 def web():
-    return render_template('index.html')
+    return redirect(url_for('is_it_time_to', verb=list(VERBS)[0]))
 
 
-@app.route('/api')
-def api():
-    return 'to implement'
-
-
-@app.route('/api/lunch')
-def api_lunch():
+@app.route('/api/<string:verb>/<int:hour>/<int:minute>')
+def api_verb_request(verb, hour, minute):
     try:
+        response, flavor = is_requested_time(verb, hour, minute)
         return jsonify(
             status='ok',
-            lunchtime='yes' if is_lunchtime(request) else 'no',
-            flavorMessage='not implemented'
+            time=response,
+            flavorMessage=flavor,
         )
     except BaseException as e:
         return jsonify(
             status='error',
             errorMessage=str(e),
         )
+
+
+@app.route('/api/<string:verb>')
+def api_verb(verb):
+    try:
+        response, flavor = is_client_time(request, verb)
+        return jsonify(
+            status='ok',
+            time=response,
+            flavorMessage=flavor,
+        )
+    except BaseException as e:
+        return jsonify(
+            status='error',
+            errorMessage=str(e),
+        )
+
+
+@app.route('/<string:verb>')
+def is_it_time_to(verb):
+    return render_template('index.html', verb=verb)
