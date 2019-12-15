@@ -17,18 +17,16 @@ class BasicTestCase(unittest.TestCase):
         self.assertIn('flavorMessage', data)
         self.assertEqual('ok', data['status'])
 
-#    def test_simple_lunch(self):
-#        response = self.app.get('/api/lunch')
-#        # request returns 200, but fails because we cannot use the ip-api
-#        # because the test uses 127.0.0.1 and is not valid
-#        self.json_format(response)
+    #    def test_simple_lunch(self):
+    #        response = self.app.get('/api/lunch')
+    #        # request returns 200, but fails because we cannot use the ip-api
+    #        # because the test uses 127.0.0.1 and is not valid
+    #        self.json_format(response)
 
     def test_req_api_lunch_time(self):
         response = self.app.get('/api/lunch/12/45')
-        
-        self.json_format(response)
-        
 
+        self.json_format(response)
 
 
 if __name__ == '__main__':

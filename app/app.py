@@ -10,7 +10,6 @@ app = Flask(__name__)
 URL_FOR_API = 'http://ip-api.com/json/'
 
 
-
 class IpApiError(BaseException):
     pass
 
@@ -33,12 +32,11 @@ def check_time_for_verb(verb, time):
         if frame_start.time() <= time < frame_end.time():
             return time_frame['is_it_time'], time_frame['flavor']
 
-    return "NO", "It's most definitely, probably not the time" 
+    return "NO", "It's most definitely, probably not the time"
 
 
 def is_requested_time(verb, hour, minute):
     return check_time_for_verb(verb, time(hour=hour, minute=minute))
-    
 
 
 def is_client_time(request, verb):
@@ -52,10 +50,9 @@ def is_client_time(request, verb):
     return check_time_for_verb(verb, client_time_now)
 
 
-
 @app.route('/', methods=['GET'])
 def web():
-    return redirect(url_for('is_it_time_to', verb=list(VERBS)[0]))
+    return redirect(url_for('is_it_time_to', verb=VERBS['lunch']))
 
 
 @app.route('/api/<string:verb>/<int:hour>/<int:minute>')
