@@ -1,18 +1,18 @@
 
-const updateLunchtime = async () => {
-    const response = await fetch("/api/lunch");
+const updateTime = async () => {
+    const response = await fetch("/api/"+verb);
     const json = await response.json();
 
     if(json.status != 'ok') {
-        document.getElementBy('main').innerHMTML = 'Maybe. :(';
+        document.getElementById('main').innerHMTML = 'Maybe. :(';
     } else {
-        document.getElementById('main').innerHTML = json.lunchtime.toUpperCase();
+        document.getElementById('main').innerHTML = json.time;
         document.getElementById('second').innerHTML = json.flavorMessage;
     }
 }
 
 window.onload = async () => {
-    updateLunchtime();
-    setInterval(updateLunchtime, 5000);
+    updateTime();
+    setInterval(updateTime, 5000);
 }
 
